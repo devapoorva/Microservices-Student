@@ -1,0 +1,16 @@
+server:
+  port: 8761
+spring:
+  application:
+    name: DiscoveryServer
+
+eureka:
+  client:
+    register-with-eureka: false
+    fetch-registry: false
+
+logging:
+  level:
+    root: WARN
+    com.netflix.eureka: TRACE
+    com.netflix.discovery: TRACE

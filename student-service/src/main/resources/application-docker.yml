@@ -1,0 +1,16 @@
+server:
+  port: 9091
+
+spring:
+  application:
+    name: StudentService
+  datasource:
+    username: admin
+    password: secret
+    url: jdbc:postgresql://student_db:5432/student
+
+eureka:
+  client:
+    service-url:
+      default-zone: http://localhost:8761/eureka
+

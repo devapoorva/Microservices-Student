@@ -1,0 +1,25 @@
+server:
+  port: 9090
+
+spring:
+  application:
+    name: ApiGateway
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: http://localhost:8080/realms/microservice-realm
+  cloud:
+    gateway:
+      routes:
+        - id: student-service
+          uri: lb://StudentService
+          predicates:
+            - Path=/api/v1/student/**
+
+
+eureka:
+  client:
+    service-url:
+      default-zone: http://localhost:8761/eureka
+

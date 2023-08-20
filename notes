@@ -1,0 +1,18 @@
+docker build -t microservices .
+docker run --platform=linux/x86_64 -d --name microservices microservices
+docker run --platform=linux/x86_64 -d --name micro micro
+
+whether zookeeper is running on port 2181
+    netstat -tulpen | grep 2181
+
+kc.sh start-dev 
+    --spi-connections-jpa-legacy-migration-strategy=manual 
+    --spi-connections-jpa-legacy-initialize-empty=false 
+    --db=mssql 
+    --db-url-host=mykeycloakdb 
+    --db-username=myuser 
+    --db-password=change_me 
+    --db-url=jdbc:postgresql://mypostgres/mydatabase
+    --db-url-database=databse
+    --db-schema=dbo 
+    --transaction-xa-enabled=false 

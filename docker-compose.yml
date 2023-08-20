@@ -1,0 +1,44 @@
+version: '3.0'
+services:
+  application:
+    platform: linux/amd64
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        - profile=dev
+    container_name: application
+    tty: true
+    stdin_open: true
+    ports:
+      - "8080:8080"
+      - "9092:9092"
+      - "2181:2181"
+      - "9411:9411"
+    networks:
+      - microservices
+    depends_on:
+      - student_db
+  
+  student_db:
+    platform: linux/amd64
+    image: postgres:latest
+    container_name: student_db
+    restart: always
+    ports:
+      - "5432:5432"
+    volumes:
+      - student-db-data:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_USER=admin
+      - POSTGRES_PASSWORD=secret
+      - POSTGRES_DB=student
+    networks:
+      - microservices
+    
+networks:
+  microservices:
+
+volumes:
+  student-db-data:
+    
