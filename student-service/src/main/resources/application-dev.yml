@@ -7,7 +7,7 @@ spring:
   datasource:
     username: admin
     password: secret
-    url: jdbc:mysql://localhost:3306/student
+    url: jdbc:postgresql://localhost:5433/student
 
 eureka:
   client:

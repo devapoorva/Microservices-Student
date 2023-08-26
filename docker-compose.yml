@@ -1,24 +1,63 @@
 version: '3.0'
 services:
-  application:
+  # application:
+  #   platform: linux/amd64
+  #   build:
+  #     context: .
+  #     dockerfile: Dockerfile
+  #     args:
+  #       - profile=docker
+  #   container_name: application
+  #   tty: true
+  #   stdin_open: true
+  #   ports:
+  #     - "9092:9092"
+  #     - "2181:2181"
+  #     - "9411:9411"
+  #     - "8761:8761"
+  #     - "9090:9090"
+  #     - "9091:9091"
+  #   networks:
+  #     - microservices
+  #   depends_on:
+  #     - student_db
+  keycloak_mysql:
     platform: linux/amd64
-    build:
-      context: .
-      dockerfile: Dockerfile
-      args:
-        - profile=dev
-    container_name: application
-    tty: true
-    stdin_open: true
+    image: mysql:latest
+    container_name: keycloak_mysql
+    volumes:
+      - mysql_data:/var/lib/mysql
+    environment:
+      MYSQL_DATABASE: keycloak
+      MYSQL_USER: keycloak
+      MYSQL_PASSWORD: Pa55w0rd
+      MYSQL_ROOT_PASSWORD: Pa55w0rd
+    ports:
+      - "3307:3306"
+    networks:
+      - microservices
+
+  keycloak:
+    platform: linux/amd64
+    image: quay.io/keycloak/keycloak:22.0.1
+    container_name: keycloak
+    # env_file:
+    #   - env/keycloak.env
     ports:
       - "8080:8080"
-      - "9092:9092"
-      - "2181:2181"
-      - "9411:9411"
+    command: 
+      - start-dev
+      - --spi-connections-jpa-quarkus-migration-strategy=manual
+      - --spi-connections-jpa-quarkus-initialize-empty=false
     networks:
       - microservices
     depends_on:
-      - student_db
+      - keycloak_mysql
+    environment:
+      - KEYCLOAK_ADMIN=admin
+      - KEYCLOAK_ADMIN_PASSWORD=secret
+    volumes:
+      - ./docker/keycloak:/opt/keycloak/data/h2
   
   student_db:
     platform: linux/amd64
@@ -26,7 +65,7 @@ services:
     container_name: student_db
     restart: always
     ports:
-      - "5432:5432"
+      - "5433:5432"
     volumes:
       - student-db-data:/var/lib/postgresql/data
     environment:
@@ -35,10 +74,59 @@ services:
       - POSTGRES_DB=student
     networks:
       - microservices
+  
+  discoveryserver:
+    platform: linux/amd64
+    build:
+      context: .
+      dockerfile: docker/discovery.dockerfile
+    container_name: discoveryserver
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+    ports:
+      - "8761:8761"
+    networks:
+      - microservices
+  
+  apigateway:
+    platform: linux/amd64
+    build: 
+      context: .
+      dockerfile: docker/gateway.dockerfile
+    container_name: apigateway
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+    ports:
+      - "9090:9090"
+    networks:
+      - microservices
+    depends_on:
+      - discoveryserver
+
+  student-service:
+    platform: linux/amd64
+    build:
+      context: .
+      dockerfile: docker/student.dockerfile
+    container_name: student-service
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+    ports:
+      - "9091:9091"
+    depends_on:
+      - discoveryserver
+      - apigateway
+      - student_db
+    networks:
+      - microservices
+
+
     
 networks:
   microservices:
 
 volumes:
   student-db-data:
+  mysql_data:
+
     

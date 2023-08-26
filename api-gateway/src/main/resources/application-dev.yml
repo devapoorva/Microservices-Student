@@ -9,6 +9,7 @@ spring:
       resourceserver:
         jwt:
           issuer-uri: http://localhost:8080/realms/microservice-realm
+          jwk-set-uri: http://localhost:8080/realms/microservice-realm/protocol/openid-connect/certs
   cloud:
     gateway:
       routes:

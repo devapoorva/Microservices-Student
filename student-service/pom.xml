@@ -16,6 +16,7 @@
 	<properties>
 		<java.version>17</java.version>
 		<spring-cloud.version>2022.0.4</spring-cloud.version>
+		<jar.finalName>StudentService</jar.finalName>
 	</properties>
 	<dependencies>
 		<dependency>
@@ -39,8 +40,8 @@
 			<artifactId>spring-cloud-starter-netflix-eureka-client</artifactId>
 		</dependency>
 		<dependency>
-			<groupId>com.mysql</groupId>
-			<artifactId>mysql-connector-j</artifactId>
+			<groupId>org.postgresql</groupId>
+			<artifactId>postgresql</artifactId>
 			<scope>runtime</scope>
 		</dependency>
 		<dependency>
@@ -80,6 +81,7 @@
 				</configuration>
 			</plugin>
 		</plugins>
+		<finalName>StudentService</finalName>
 	</build>
 
 </project>

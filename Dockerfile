@@ -18,7 +18,7 @@ RUN apt-get install -y net-tools
 RUN apt-get install -y wget 
 RUN DEBIAN_FRONTEND=noninteractive TZ=Etc/UTC apt-get install -y  git software-properties-common curl
 RUN DEBIAN_FRONTEND=noninteractive TZ=Etc/UTC apt-get -y install tzdata
-COPY . /application
+
 
 # Node js
 
@@ -28,6 +28,9 @@ RUN  apt install -y nodejs
 # JDK
 RUN apt-cache search openjdk | grep openjdk-17
 RUN apt install -y openjdk-17-jdk
+
+WORKDIR /application
+COPY . /application
 
 
 # maven
@@ -50,7 +53,7 @@ RUN wget https://downloads.apache.org/kafka/3.5.1/kafka_${KAFKA_VERSION}.tgz
 RUN tar -xzf kafka_${KAFKA_VERSION}.tgz
 RUN mv kafka_${KAFKA_VERSION} /opt/kafka
 
-WORKDIR /application
+
 
 COPY server.properties /opt/kafka/config/server.properties
 COPY zookeeper.service /etc/systemd/system/zookeeper.service
@@ -62,16 +65,22 @@ RUN ln -s $KAFKA_HOME/config/server.properties /etc/kafka.properties
 
 # keycloak
 # https://github.com/keycloak/keycloak/releases/download/22.0.1/keycloak-22.0.1.tar.gz
-RUN wget https://github.com/keycloak/keycloak/releases/download/${KEYCLOAK_VERSION}/keycloak-${KEYCLOAK_VERSION}.tar.gz
-RUN tar -xzf keycloak-${KEYCLOAK_VERSION}.tar.gz
-RUN mv keycloak-${KEYCLOAK_VERSION} /opt/keycloak
-RUN export KEYCLOAK_HOME=/opt/keycloak
-RUN export PATH=${KEYCLOAK_HOME}/bin:${PATH}
+# RUN wget https://github.com/keycloak/keycloak/releases/download/${KEYCLOAK_VERSION}/keycloak-${KEYCLOAK_VERSION}.tar.gz
+# RUN tar -xzf keycloak-${KEYCLOAK_VERSION}.tar.gz
+# RUN mv keycloak-${KEYCLOAK_VERSION} /opt/keycloak
+# RUN export KEYCLOAK_HOME=/opt/keycloak
+# RUN export PATH=${KEYCLOAK_HOME}/bin:${PATH}
 
 # https://stackoverflow.com/questions/30209776/docker-container-will-automatically-stop-after-docker-run-d
 # ENTRYPOINT ["tail"]
 # CMD ["-f","/dev/null"] 
 # zipkin
 RUN curl -sSL https://zipkin.io/quickstart.sh | bash -s
+
+RUN cd ./discovery-server && mvn clean install && cp ./target/DiscoveryServer.jar ../DiscoveryServer.jar
+
+RUN cd ./api-gateway && mvn clean install && cp ./target/ApiGateway.jar ../ApiGateway.jar
+
+RUN cd ./student-service && mvn clean install -U -Dmaven.test.failure.ignore=true && cp ./target/StudentService.jar ../StudentService.jar
 
 CMD sh start.sh && tail -f /dev/null

@@ -6,6 +6,8 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.reactive.EnableWebFluxSecurity;
 import org.springframework.security.config.web.server.ServerHttpSecurity;
+import org.springframework.security.oauth2.jwt.NimbusReactiveJwtDecoder;
+import org.springframework.security.oauth2.jwt.ReactiveJwtDecoder;
 import org.springframework.security.web.server.SecurityWebFilterChain;
 
 /**
@@ -16,8 +18,8 @@ import org.springframework.security.web.server.SecurityWebFilterChain;
 @Configuration
 @EnableWebFluxSecurity
 public class OAuth2ResourceServerSecurityConfiguration {
-//    @Value("${spring.security.oauth2.resourceserver.jwt.jwk-set-uri}")
-//    String jwkSetUri;
+    @Value("${spring.security.oauth2.resourceserver.jwt.jwk-set-uri}")
+    String jwkSetUri;
 
     @Bean
     public SecurityWebFilterChain securityFilterChain(ServerHttpSecurity serverHttpSecurity) throws Exception {
@@ -48,4 +50,9 @@ public class OAuth2ResourceServerSecurityConfiguration {
     JwtDecoder jwtDecoder() {
         return NimbusJwtDecoder.withJwkSetUri(this.jwkSetUri).build();
     }*/
+
+    @Bean
+    ReactiveJwtDecoder jwtDecoder(){
+        return NimbusReactiveJwtDecoder.withJwkSetUri(this.jwkSetUri).build();
+    }
 }

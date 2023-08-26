@@ -8,7 +8,8 @@ spring:
     oauth2:
       resourceserver:
         jwt:
-          issuer-uri: http://localhost:8080/realms/microservice-realm
+          issuer-uri: http://keycloak:8080/realms/microservice-realm
+          jwk-set-uri: http://keycloak:8080/realms/microservice-realm/protocol/openid-connect/certs
   cloud:
     gateway:
       routes:
@@ -16,10 +17,8 @@ spring:
           uri: lb://StudentService
           predicates:
             - Path=/api/v1/student/**
-
-
 eureka:
   client:
     service-url:
-      default-zone: http://localhost:8761/eureka
+      default-zone: http://application:8761/eureka
 

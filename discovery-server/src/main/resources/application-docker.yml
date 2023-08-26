@@ -2,15 +2,25 @@ server:
   port: 8761
 spring:
   application:
-    name: DiscoveryServer
+    name: discoveryserver
 
 eureka:
+  server:
+    eviction-interval-timer-in-ms: 15000
   client:
     register-with-eureka: false
     fetch-registry: false
-
+    service-url:
+      default-zone: http://application:8761/eureka/
+  instance:
+    instance-id: ${spring.application.name}:${random.value}
+    hostname: localhost
+    secure-port: ${server.port}
+    non-secure-port-enabled: true
+    non-secure-port: ${server.port}
 logging:
   level:
     root: WARN
     com.netflix.eureka: TRACE
     com.netflix.discovery: TRACE
+

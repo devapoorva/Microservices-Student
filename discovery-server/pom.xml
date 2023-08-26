@@ -16,6 +16,7 @@
 	<properties>
 		<java.version>17</java.version>
 		<spring-cloud.version>2022.0.4</spring-cloud.version>
+		<jar.finalName>DiscoveryServer</jar.finalName>
 	</properties>
 	<dependencies>
 		<dependency>
@@ -52,6 +53,7 @@
 				<artifactId>spring-boot-maven-plugin</artifactId>
 			</plugin>
 		</plugins>
+		<finalName>DiscoveryServer</finalName>
 	</build>
 
 </project>
